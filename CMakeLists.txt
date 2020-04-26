@@ -8,9 +8,10 @@ project ( libjpeg C )
 cmake_minimum_required ( VERSION 2.8 )
 include ( cmake/dist.cmake )
 
-OPTION(BUILD_STATIC OFF)
-OPTION(BUILD_EXECUTABLES ON)
-OPTION(BUILD_TESTS ON)
+OPTION(BUILD_JPEG_STATIC ON)
+OPTION(BUILD_JPEG_EXECUTABLES OFF)
+OPTION(BUILD_JPEG_TESTS OFF)
+OPTION(INSTALL_JPEG OFF)
 
 include ( CheckIncludeFile )
 check_include_file ( stddef.h HAVE_STDDEF_H )
@@ -35,13 +36,13 @@ set ( SRC jmemnobs.c jaricom.c jcapimin.c jcapistd.c jcarith.c jccoefct.c jccolo
   jidctflt.c jidctfst.c jidctint.c jquant1.c jquant2.c jutils.c jmemmgr.c cderror.h 
   cdjpeg.h jdct.h jinclude.h jmemsys.h jpegint.h jversion.h transupp.h )
 
-if ( BUILD_STATIC )
+if ( BUILD_JPEG_STATIC )
   add_library ( jpeg STATIC ${SRC} ${HEADERS} )
 else ()
   add_library ( jpeg ${SRC} ${HEADERS} )
 endif()
 
-if ( BUILD_EXECUTABLES )
+if ( BUILD_JPEG_EXECUTABLES )
   add_executable ( cjpeg cdjpeg.c cjpeg.c rdbmp.c rdgif.c rdppm.c rdrle.c rdtarga.c 
     rdswitch.c )
   add_executable ( djpeg cdjpeg.c djpeg.c wrbmp.c wrgif.c wrppm.c wrrle.c wrtarga.c 
@@ -54,16 +55,18 @@ if ( BUILD_EXECUTABLES )
   target_link_libraries ( jpegtran jpeg )
 endif ()
 
-if ( BUILD_EXECUTABLES )
+if ( BUILD_JPEG_EXECUTABLES )
   install_executable ( cjpeg djpeg jpegtran rdjpgcom wrjpgcom )
 endif ()
 
+if(INSTALL_JPEG)
 install_library ( jpeg )
 install_header ( ${HEADERS} )
 install_doc ( README install.txt usage.txt wizard.txt example.c libjpeg.txt structure.txt 
   coderules.txt filelist.txt change.log )
+endif()
 
-if ( BUILD_TESTS )
+if ( BUILD_JPEG_TESTS )
   # tests
   enable_testing ( )
   macro ( mytest name target args input output )
